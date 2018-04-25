@@ -1,31 +1,22 @@
 
-var obj = JSON.parse(
-    '{"resourceType": "Patient",' + 
-    '"id": "xcda",' + 
-    '"text": {'+
-      '"status": "generated",' + 
-      '"div": "<div>\\n      \\n      <p>Henry Levin the 7th</p>\\n    \\n   </div>"' + 
-      '},' + 
-    '"identifier": [{' + 
-      '"use": "usual",' +
-      '"type": {' + 
-        '"coding": [{' + 
-          '"system": "http://hl7.org/fhir/v2/0203",' + 
-          '"code": "MR"}]},' +
-      '"system": "urn:oid:2.16.840.1.113883.19.5",' + 
-      '"value": "12345"}],'+
-    '"active": true,' + 
-    '"name":[{"family": ["Levin"], "given": ["Henry"]}],' + 
-    '"gender": "male",' + 
-    '"birthDate": "2002-09-24",' +
-    '"managingOrganization":{' +
-      '"reference": "Organization/2.16.840.1.113883.19.5",' +
-      '"display": "University Health Netword"},' +
-    '"condition": ["Diabetes", "High blood pressure", "Asthma"]' + 
-    '}');
+ function loadJSON(callback) {   
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          var myObj = JSON.parse(this.responseText);
+          // console.log("successful response");
+          callback(xmlhttp.responseText);
+      }
+  };
+  xmlhttp.open("GET", "q1.json", true);
+  xmlhttp.send();
+ }
 
 
 function start() {
+  loadJSON(function(response) {
+    var obj = JSON.parse(response);
+
     var newName = document.createElement('text');
     newName.innerHTML = obj.name[0].given[0] + " " + obj.name[0].family;
     document.getElementById("name").appendChild(newName.firstChild);
@@ -39,13 +30,16 @@ function start() {
     document.getElementById("gender").appendChild(newGender.firstChild);
 
     var newNumOfCond = document.createElement('text');
-    newNumOfCond.innerHTML = obj.condition.length;
+    newNumOfCond.innerHTML = obj.conditions.length;
+    // newNumOfCond.innerHTML = obj.conditions.length;
     document.getElementById("numberOfConditions").appendChild(
       newNumOfCond.firstChild);
 
     var newCondList = "";
-    for (i in obj.condition) {
-      newCondList += " - " + obj.condition[i] + "<br>";
+    for (i in obj.conditions) {
+      newCondList += " - " + obj.conditions[i] + "<br>";
     }
     document.getElementById("condList").innerHTML = newCondList;
-  }
+  });
+
+}
